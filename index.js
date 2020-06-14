@@ -13,6 +13,9 @@ app.use(cors())
 
 let Promise = require('bluebird');
 
+let geoLocations = [];
+let message = [];
+
 var port = process.env.PORT || 3001
 app.listen(port, function () {
     console.log("To view your app, open this link in your browser: http://localhost:" + port);
@@ -64,5 +67,60 @@ app.post('/conversation/', (req, res) => {
         }
     });
 });
+
+app.post('/setCoord', (req, res) => {
+    let {
+        latitude,
+        longitude
+    } = req.body
+
+    try {
+        if (latitude == undefined || longitude == undefined) {
+            return res.status(400).send({
+                Message: 'Formato errado'
+            })
+        }
+        console.log(latitude, longitude)
+        geoLocations.push({
+            latitude,
+            longitude
+        })
+        res.status(200).send({
+            Message: 'Geolocation enviado'
+        })
+    } catch (error) {
+        res.status(500).send(erro)
+    }
+})
+
+app.post('/sendMessage', (req, res) => {
+    let {mensagem} = req.body
+
+    try {
+        if (mensagem == undefined) {
+            return res.status(400).send({
+                Message: 'Formato errado'
+            })
+        }
+        console.log(mensagem)
+        message.push(mensagem)
+
+        res.status(200).send({
+            Message: 'Mensagem enviada'
+        })
+    } catch (error) {
+        res.status(500).send(erro)
+    }
+})
+
+app.get('/getCoord', (req, res) => {
+    res.status(200).send(geoLocations)
+
+})
+
+app.get('/getMessages', (req, res) => {
+    res.status(200).send(message)
+
+})
 
 
